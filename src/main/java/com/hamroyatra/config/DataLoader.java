@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
 
 @Component
@@ -20,6 +23,9 @@ public class DataLoader implements CommandLineRunner {
     private final TourPackageRepository tourPackageRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     public DataLoader(DestinationRepository destinationRepository,
@@ -33,15 +39,36 @@ public class DataLoader implements CommandLineRunner {
     }
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
-        // Check if data already exists
-        if (destinationRepository.count() == 0) {
-            loadDestinations();
-        }
-
-        // Create admin user if not exists
-        if (userRepository.count() == 0) {
-            createAdminUser();
+        try {
+            // Wait a bit to ensure tables are created by schema.sql
+            Thread.sleep(2000);
+            
+            // Create admin user if not exists
+            try {
+                if (userRepository.count() == 0) {
+                    createAdminUser();
+                    System.out.println("Admin user created successfully");
+                }
+            } catch (Exception e) {
+                System.out.println("Error creating admin user: " + e.getMessage());
+                e.printStackTrace();
+            }
+            
+            // Load destinations and tour packages
+            try {
+                if (destinationRepository.count() == 0) {
+                    loadDestinations();
+                    System.out.println("Destinations and tour packages loaded successfully");
+                }
+            } catch (Exception e) {
+                System.out.println("Error loading destinations: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            System.out.println("Error during data initialization: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

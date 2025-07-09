@@ -30,6 +30,13 @@ public class DestinationController {
     @GetMapping
     public String getAllDestinations(Model model) {
         List<Destination> destinations = destinationService.getAllDestinations();
+        
+        // Add tour packages count for each destination
+        for (Destination destination : destinations) {
+            List<TourPackage> packages = tourPackageService.getTourPackagesByDestinationId(destination.getId());
+            destination.setTourPackages(new java.util.HashSet<>(packages));
+        }
+        
         model.addAttribute("destinations", destinations);
         model.addAttribute("pageTitle", "Destinations - HamroYatra");
         model.addAttribute("activeTab", "destinations");
