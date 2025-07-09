@@ -34,14 +34,30 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Check if data already exists
-        if (destinationRepository.count() == 0) {
-            loadDestinations();
-        }
+        try {
+            // Wait a bit to ensure tables are created
+            Thread.sleep(2000);
+            
+            // Check if data already exists
+            try {
+                if (destinationRepository.count() == 0) {
+                    loadDestinations();
+                }
+            } catch (Exception e) {
+                System.out.println("Error checking destinations: " + e.getMessage());
+            }
 
-        // Create admin user if not exists
-        if (userRepository.count() == 0) {
-            createAdminUser();
+            // Create admin user if not exists
+            try {
+                if (userRepository.count() == 0) {
+                    createAdminUser();
+                }
+            } catch (Exception e) {
+                System.out.println("Error creating admin user: " + e.getMessage());
+            }
+        } catch (Exception e) {
+            System.out.println("Error during data initialization: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
