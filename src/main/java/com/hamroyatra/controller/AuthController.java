@@ -24,7 +24,7 @@ public class AuthController {
     
     @GetMapping("/login")
     public String login(Model model) {
-        model.addAttribute("pageTitle", "Login - HamroYatra");
+        model.addAttribute("pageTitle", "Login - HamroYatr++++++++a");
         model.addAttribute("activeTab", "login");
         return "auth/login";
     }

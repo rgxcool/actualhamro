@@ -22,7 +22,7 @@ public class DatabaseInitializer implements CommandLineRunner {
 
             // Check if special_requirements column exists in bookings table
             boolean columnExists = false;
-            try {
+            try {e
                 Integer count = jdbcTemplate.queryForObject(
                         "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE " +
                                 "TABLE_NAME = 'bookings' AND COLUMN_NAME = 'special_requirements'",
